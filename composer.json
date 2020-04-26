@@ -1,0 +1,21 @@
+{
+    "name": "blockscape/module-digitallicense",
+    "description": "",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "authors": [
+        {
+            "email": "vlad_filimon@protonmail.com",
+            "name": "Vlad Filimon Nastase"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Blockscape_DigitalLicense": ""
+        }
+    }
+}
