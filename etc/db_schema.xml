@@ -16,7 +16,7 @@
         <column xsi:type="int" name="customer_id" unsigned="true" nullable="true" identity="false" padding="10" comment="Customer Id (used for redundancy)"/>
         <column xsi:type="varchar" name="license_text" nullable="false" length="255" comment="License key"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="entity_id"/>
+            <column name="license_id"/>
         </constraint>
         <constraint xsi:type="foreign" referenceId="BSC_LICENSE_ORDER_FK" table="bsc_digital_license"
                     column="order_id" referenceTable="sales_order" referenceColumn="entity_id"
