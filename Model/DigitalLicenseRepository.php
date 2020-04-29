@@ -9,6 +9,9 @@
 
 namespace Blockscape\DigitalLicense\Model;
 
+use \Magento\Framework\Api\SearchCriteriaBuilder;
+use \Magento\Catalog\Api\Data\ProductInterface;
+
 /**
  * DigitalLicenseRepository Class
  */
@@ -19,26 +22,33 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
 
     protected $collectionFactory = null;
 
+    protected $searchCriteriaBuilder = null;
+
     /**
      * initialize
      *
-     * @param Blockscape\DigitalLicense\Model\DigitalLicenseFactory $modelFactory
-     * @param
-     * Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense\CollectionFactory
-     * $collectionFactory
+     * @param \Blockscape\DigitalLicense\Model\DigitalLicenseFactory $modelFactory
+     * @param \Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense\CollectionFactory $collectionFactory
+     * @paramSearchCriteriaBuilder
      * @return void
      */
-    public function __construct(\Blockscape\DigitalLicense\Model\DigitalLicenseFactory $modelFactory, \Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense\CollectionFactory $collectionFactory)
+    public function __construct(
+        \Blockscape\DigitalLicense\Model\DigitalLicenseFactory $modelFactory,
+        \Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense\CollectionFactory $collectionFactory,
+        SearchCriteriaBuilder $searchCriteriaBuilder
+    )
     {
         $this->modelFactory = $modelFactory; 
         $this->collectionFactory = $collectionFactory;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+
     }
 
     /**
      * get by id
      *
      * @param int $id
-     * @return Blockscape\DigitalLicense\Model\DigitalLicense
+     * @return \Blockscape\DigitalLicense\Model\DigitalLicense
      */
     public function getById($id)
     {
@@ -53,7 +63,7 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
      * get by id
      *
      * @param int $id
-     * @return Blockscape\DigitalLicense\Model\DigitalLicense
+     * @return \Blockscape\DigitalLicense\Model\DigitalLicense
      */
     public function save(\Blockscape\DigitalLicense\Model\DigitalLicense $subject)
     {
@@ -68,27 +78,27 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
     /**
      * get list
      *
-     * @param Magento\Framework\Api\SearchCriteriaInterface $creteria
-     * @return Magento\Framework\Api\SearchResults
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $creteria
+     * @return \Magento\Framework\Api\SearchResults
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $creteria)
     {
         $collection = $this->collectionFactory->create(); 
-         return $collection;
+        return $collection;
     }
 
     /**
      * delete
      *
-     * @param Blockscape\DigitalLicense\Model\DigitalLicense $subject
+     * @param \Blockscape\DigitalLicense\Model\DigitalLicense $subject
      * @return boolean
      */
     public function delete(\Blockscape\DigitalLicense\Model\DigitalLicense $subject)
     {
         try { 
-        $subject->delete();
+            $subject->delete();
         } catch (\Exception $exception) {
-        throw new \Magento\Framework\Exception\CouldNotDeleteException(__($exception->getMessage()));
+            throw new \Magento\Framework\Exception\CouldNotDeleteException(__($exception->getMessage()));
         }
         return true;
     }
@@ -104,6 +114,16 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
         return $this->delete($this->getById($id));
     }
 
-
+    /**
+     * @param ProductInterface $product
+     * @return \Magento\Framework\Api\SearchResults
+     */
+    public function getByProduct(ProductInterface $product)
+    {
+        return $this->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter('product_id', $product->getId())
+                ->create()
+        );
+    }
 }
-

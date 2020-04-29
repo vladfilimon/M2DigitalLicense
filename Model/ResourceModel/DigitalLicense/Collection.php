@@ -24,7 +24,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function _construct()
     {
-        $this->_init("Blockscape\DigitalLicense\Model\DigitalLicense", "Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense");
+        $this->_init(\Blockscape\DigitalLicense\Model\DigitalLicense::class, \Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense::class);
         $this->_map['fields']['entity_id'] = 'main_table.license_id';
     }
 

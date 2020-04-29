@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+  ~ @category Blockscape
+  ~ @package Blockscape_DigitalLicense
+  ~ @author Vlad Filimon Nastase <vlad_filimon@protonmail.com>
+  ~ @copyright Copyright (c) 2020 Blockscape
+  -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
+    <extension_attributes for="Magento\Catalog\Api\Data\ProductInterface">
+        <attribute code="digital_licenses" type="Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface[]" />
+    </extension_attributes>
+</config>
