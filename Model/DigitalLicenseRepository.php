@@ -48,7 +48,7 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
      * get by id
      *
      * @param int $id
-     * @return \Blockscape\DigitalLicense\Model\DigitalLicense
+     * @return \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
      */
     public function getById($id)
     {
@@ -63,14 +63,14 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
      * get by id
      *
      * @param int $id
-     * @return \Blockscape\DigitalLicense\Model\DigitalLicense
+     * @return \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
      */
-    public function save(\Blockscape\DigitalLicense\Model\DigitalLicense $subject)
+    public function save(\Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface $subject)
     {
         try { 
          $subject->save(); 
         } catch (\Exception $exception) { 
-         throw new \Magento\Framework\Exception\CouldNotSaveException(__($exception->getMessage())); 
+            throw new \Magento\Framework\Exception\CouldNotSaveException(__($exception->getMessage()));
         } 
          return $subject;
     }
@@ -90,10 +90,10 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
     /**
      * delete
      *
-     * @param \Blockscape\DigitalLicense\Model\DigitalLicense $subject
+     * @param \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
      * @return boolean
      */
-    public function delete(\Blockscape\DigitalLicense\Model\DigitalLicense $subject)
+    public function delete(\Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface $subject)
     {
         try { 
             $subject->delete();

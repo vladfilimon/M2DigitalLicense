@@ -19,16 +19,16 @@ interface DigitalLicenseRepositoryInterface
      * get by id
      *
      * @param int $id
-     * @return \Blockscape\DigitalLicense\Model\DigitalLicense
+     * @return \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
      */
     public function getById($id);
     /**
      * get by id
      *
      * @param int $id
-     * @return \Blockscape\DigitalLicense\Model\DigitalLicense
+     * @return \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
      */
-    public function save(\Blockscape\DigitalLicense\Model\DigitalLicense $subject);
+    public function save(\Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface $subject);
     /**
      * get list
      *
@@ -39,10 +39,10 @@ interface DigitalLicenseRepositoryInterface
     /**
      * delete
      *
-     * @param \Blockscape\DigitalLicense\Model\DigitalLicense $subject
+     * @param \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface $subject
      * @return boolean
      */
-    public function delete(\Blockscape\DigitalLicense\Model\DigitalLicense $subject);
+    public function delete(\Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface $subject);
     /**
      * delete by id
      *
