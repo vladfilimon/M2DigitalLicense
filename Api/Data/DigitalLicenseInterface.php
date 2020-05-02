@@ -9,11 +9,12 @@
 
 namespace Blockscape\DigitalLicense\Api\Data;
 
-
 /**
  * DigitalLicense Interface
  */
-interface DigitalLicenseInterface extends \Magento\Framework\DataObject\IdentityInterface, \Magento\Framework\Api\ExtensibleDataInterface
+interface DigitalLicenseInterface extends
+    \Magento\Framework\DataObject\IdentityInterface,
+    \Magento\Framework\Api\ExtensibleDataInterface
 {
 
     const LICENSE_ID = 'license_id';
@@ -107,4 +108,3 @@ interface DigitalLicenseInterface extends \Magento\Framework\DataObject\Identity
      */
     public function setExtensionAttributes(\Blockscape\DigitalLicense\Api\Data\DigitalLicenseExtensionInterface $extensionAttributes);
 }
-

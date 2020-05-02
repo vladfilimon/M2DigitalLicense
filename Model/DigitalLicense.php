@@ -12,7 +12,8 @@ namespace Blockscape\DigitalLicense\Model;
 /**
  * DigitalLicense Class
  */
-class DigitalLicense extends \Magento\Framework\Model\AbstractExtensibleModel implements \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
+class DigitalLicense extends \Magento\Framework\Model\AbstractExtensibleModel
+    implements \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
 {
 
     const NOROUTE_ENTITY_ID = 'no-route';
@@ -156,7 +157,6 @@ class DigitalLicense extends \Magento\Framework\Model\AbstractExtensibleModel im
         return parent::getData(self::LICENSE_TEXT);
     }
 
-
     /**
      * {@inheritdoc}
      *
@@ -173,7 +173,9 @@ class DigitalLicense extends \Magento\Framework\Model\AbstractExtensibleModel im
      * @param \Blockscape\DigitalLicense\Api\Data\DigitalLicenseExtensionInterface $extensionAttributes
      * @return $this
      */
-    public function setExtensionAttributes(\Blockscape\DigitalLicense\Api\Data\DigitalLicenseExtensionInterface $extensionAttributes)
+    public function setExtensionAttributes(
+        \Blockscape\DigitalLicense\Api\Data\DigitalLicenseExtensionInterface $extensionAttributes
+    )
     {
         return $this->_setExtensionAttributes($extensionAttributes);
     }

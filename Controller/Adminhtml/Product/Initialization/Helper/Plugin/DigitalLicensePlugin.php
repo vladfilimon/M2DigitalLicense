@@ -8,17 +8,18 @@
 
 namespace Blockscape\DigitalLicense\Controller\Adminhtml\Product\Initialization\Helper\Plugin;
 use \Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory;
-use \Magento\Catalog\Api\Data\ProductExtensionInterface;
-use \Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense\Collection;
-use \Magento\Catalog\Api\Data\ProductInterface;
 use \Magento\Catalog\Api\Data\ProductExtensionFactory;
 use \Blockscape\DigitalLicense\Api\DigitalLicenseRepositoryInterface;
-use \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface;
 use \Blockscape\DigitalLicense\Model\DigitalLicenseFactory;
-
+use Magento\Framework\App\RequestInterface;
 
 class DigitalLicensePlugin
 {
+    /**
+     * @var RequestInterface
+     */
+    private $request;
+
     /**
      * @var ProductExtensionInterfaceFactory
      */
@@ -38,31 +39,137 @@ class DigitalLicensePlugin
      * @param ProductExtensionFactory $productExtensionFactory
      * @param DigitalLicenseFactory $digitalLicenseFactory
      * @param DigitalLicenseRepositoryInterface $digitalLicenseRepository
+     * @param RequestInterface $request
      */
     public function __construct(
         ProductExtensionFactory $productExtensionFactory,
         DigitalLicenseFactory $digitalLicenseFactory,
-        \Blockscape\DigitalLicense\Model\DigitalLicenseRepository $digitalLicenseRepository
+        \Blockscape\DigitalLicense\Model\DigitalLicenseRepository $digitalLicenseRepository,
+        RequestInterface $request
     ) {
 
         $this->productExtensionFactory = $productExtensionFactory;
         $this->digitalLicenseFactory      = $digitalLicenseFactory;
         $this->digitalLicenseRepository   = $digitalLicenseRepository;
+        $this->request = $request;
     }
 
-    public function afterGetExtensionAttributes(
-        ProductInterface $entity,
-        ProductExtensionInterface $extension = null
+    /**
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface $subject
+     * @param \Magento\Catalog\Api\Data\ProductInterface $product
+     * @return \Magento\Catalog\Api\Data\ProductInterface
+     */
+    public function afterGet
+    (
+        \Magento\Catalog\Api\ProductRepositoryInterface $subject,
+        \Magento\Catalog\Api\Data\ProductInterface $product
     ) {
-        if ($extension === null) {
-            $extension = $this->productExtensionFactory->create();
+        $this->addDigitalLicensesToProduct($product);
+        return $product;
+    }
+
+    /**
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface $subject
+     * @param \Magento\Catalog\Api\Data\ProductInterface $product
+     * @return \Magento\Catalog\Api\Data\ProductInterface
+     */
+    public function afterGetById
+    (
+        \Magento\Catalog\Api\ProductRepositoryInterface $subject,
+        \Magento\Catalog\Api\Data\ProductInterface $product
+    ) {
+        $this->addDigitalLicensesToProduct($product);
+        return $product;
+    }
+
+    /**
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface $subject
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     * @return \Magento\Framework\Api\SearchResults
+     */
+    public function afterGetList
+    (
+        \Magento\Catalog\Api\ProductRepositoryInterface $subject,
+        \Magento\Framework\Api\SearchResults $searchResult
+    ) {
+        /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
+        foreach ($searchResult->getItems() as $product) {
+            $this->addDigitalLicensesToProduct($product);
         }
 
-        $extension->setDigitalLicenses(
-            $this->digitalLicenseRepository->getByProduct($entity)
+        return $searchResult;
+    }
+
+    /**
+     * Prepare product to save
+     *
+     * @param \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper $subject
+     * @param \Magento\Catalog\Model\Product $product
+     * @return \Magento\Catalog\Model\Product
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public function afterInitialize(
+        \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper $subject,
+        \Magento\Catalog\Model\Product $product
+    ) {
+        $digitalLicenseData = $this->request->getPost('digital_license');
+        $extension = $product->getExtensionAttributes();
+        $prdDigitalLicenses = $extension->getDigitalLicenses();
+        foreach ($prdDigitalLicenses as $prdLicense) {
+            $found = false;
+            foreach ($digitalLicenseData['licenses'] as $license) {
+                if (isset ($license['license_id']) &&
+                    $prdLicense->getId() == $license['license_id']) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                /**
+                 * @TODO soft delete
+                 */
+                $this->digitalLicenseRepository->delete($prdLicense);
+            }
+        }
+
+        foreach ($digitalLicenseData['licenses'] as $license) {
+            if (!isset($license['license_id'])) {
+                $newLicense = $this->digitalLicenseFactory->create();
+                $newLicense->setData($license);
+                $newLicense->setProductId($product->getId());
+                $this->digitalLicenseRepository->save($newLicense);
+            }
+        }
+        return $product;
+    }
+
+    /**
+     * @param \Magento\Catalog\Api\Data\ProductInterface $product
+     * @return self
+     */
+    protected function addDigitalLicensesToProduct(\Magento\Catalog\Api\Data\ProductInterface $product)
+    {
+        $extensionAttributes = $product->getExtensionAttributes();
+
+        if (empty($extensionAttributes)) {
+            $extensionAttributes = $this->productExtensionFactory->create();
+        }
+
+        $licensesArray = [];
+        foreach ($this->digitalLicenseRepository->getByProduct($product)->getItems() as $license) {
+            $licensesArray[] = $license;
+        }
+
+        $extensionAttributes->setDigitalLicenses(
+            $licensesArray
         );
 
-        return $extension;
+        $product->setExtensionAttributes($extensionAttributes);
+
+        return $this;
     }
 
 }
