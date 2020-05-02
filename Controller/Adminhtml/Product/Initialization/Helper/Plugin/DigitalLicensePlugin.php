@@ -138,8 +138,13 @@ class DigitalLicensePlugin
         foreach ($digitalLicenseData['licenses'] as $license) {
             if (!isset($license['license_id'])) {
                 $newLicense = $this->digitalLicenseFactory->create();
+                /**
+                 * @TODO set just the license text not whole data
+                 */
                 $newLicense->setData($license);
                 $newLicense->setProductId($product->getId());
+                $newLicense->setIsActive(true);
+
                 $this->digitalLicenseRepository->save($newLicense);
             }
         }
@@ -147,6 +152,8 @@ class DigitalLicensePlugin
     }
 
     /**
+     * Adds all active (not soft deleted) licenses to the product
+     *
      * @param \Magento\Catalog\Api\Data\ProductInterface $product
      * @return self
      */

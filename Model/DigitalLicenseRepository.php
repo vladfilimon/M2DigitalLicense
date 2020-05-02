@@ -141,6 +141,8 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
     }
 
     /**
+     * Returns available (not sold) active (not soft deleted) licenses for a product
+     *
      * @param ProductInterface $product
      * @return \Magento\Framework\Api\SearchResults
      */
@@ -149,6 +151,8 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
         return $this->getList(
             $this->searchCriteriaBuilder
                 ->addFilter('product_id', $product->getId())
+                ->addFilter('is_active', '1')
+                ->addFilter('order_id', true, 'null')
                 ->create()
         );
     }

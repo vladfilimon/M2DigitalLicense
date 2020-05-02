@@ -15,8 +15,14 @@
         <column xsi:type="int" name="order_id" unsigned="true" nullable="true" identity="false" padding="10" comment="Order Id"/>
         <column xsi:type="int" name="customer_id" unsigned="true" nullable="true" identity="false" padding="10" comment="Customer Id (used for redundancy)"/>
         <column xsi:type="varchar" name="license_text" nullable="false" length="255" comment="License key"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="true" identity="false" padding="10" comment="Is NULL if soft deleted"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="license_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="BSC_LICENSE_PRODUCT_ACTIVE_UNIQUE">
+            <column name="license_text"/>
+            <column name="product_id"/>
+            <column name="is_active"/>
         </constraint>
         <constraint xsi:type="foreign" referenceId="BSC_LICENSE_ORDER_FK" table="bsc_digital_license"
                     column="order_id" referenceTable="sales_order" referenceColumn="entity_id"
@@ -29,6 +35,7 @@
                     referenceColumn="entity_id" onDelete="SET NULL"/>
         <index referenceId="BSC_PRODUCT_ID_IDX" indexType="btree">
             <column name="product_id"/>
+            <column name="is_active"/>
         </index>
         <index referenceId="BSC_ORDER_ID_IDX" indexType="btree">
             <column name="order_id"/>

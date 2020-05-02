@@ -92,7 +92,7 @@ class LicenseKeys extends AbstractModifier
         $linksContainer['arguments']['data']['config'] = [
             'componentType' => Form\Fieldset::NAME,
             'additionalClasses' => 'admin__fieldset-section',
-            'label' => __('License Keys'),
+            'label' => __('Available Licenses'),
             'dataScope' => '',
             'visible' => 1,
             'sortOrder' => 30,
