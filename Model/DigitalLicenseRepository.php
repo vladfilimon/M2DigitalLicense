@@ -24,24 +24,37 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
 
     protected $searchCriteriaBuilder = null;
 
+    /** @var \Blockscape\DigitalLicense\Api\Data\DigitalLicenseSearchResultInterfaceFactory|null */
+    protected $searchResultFactory = null;
+
+    /**
+     * @var \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface
+     **/
+    protected $collectionProcessor;
+
     /**
      * initialize
      *
      * @param \Blockscape\DigitalLicense\Model\DigitalLicenseFactory $modelFactory
      * @param \Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense\CollectionFactory $collectionFactory
-     * @paramSearchCriteriaBuilder
+     * @param SearchCriteriaBuilder
+     * @param \Blockscape\DigitalLicense\Api\Data\DigitalLicenseSearchResultInterfaceFactory $searchResultFactory
+     * @param \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
      * @return void
      */
     public function __construct(
         \Blockscape\DigitalLicense\Model\DigitalLicenseFactory $modelFactory,
         \Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense\CollectionFactory $collectionFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        \Blockscape\DigitalLicense\Api\Data\DigitalLicenseSearchResultInterfaceFactory $searchResultFactory,
+        \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
     )
     {
         $this->modelFactory = $modelFactory; 
         $this->collectionFactory = $collectionFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-
+        $this->searchResultFactory = $searchResultFactory;
+        $this->collectionProcessor = $collectionProcessor;
     }
 
     /**
@@ -68,7 +81,7 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
     public function save(\Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface $subject)
     {
         try { 
-         $subject->save(); 
+            $subject->save();
         } catch (\Exception $exception) { 
             throw new \Magento\Framework\Exception\CouldNotSaveException(__($exception->getMessage()));
         } 
@@ -78,13 +91,26 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
     /**
      * get list
      *
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $creteria
-     * @return \Magento\Framework\Api\SearchResults
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     * @return \Magento\Framework\Api\SearchResultsInterface
      */
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $creteria)
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria)
     {
-        $collection = $this->collectionFactory->create(); 
-        return $collection;
+        $collection = $this->collectionFactory->create();
+        $searchResults = $this->searchResultFactory->create();
+        /*
+        $this->addFiltersToCollection($searchCriteria, $collection);
+        $this->addSortOrdersToCollection($searchCriteria, $collection);
+        $this->addPagingToCollection($searchCriteria, $collection);
+        */
+
+        $this->collectionProcessor->process($searchCriteria, $collection);
+        $collection->load();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
     }
 
     /**

@@ -44,7 +44,7 @@ class DigitalLicensePlugin
     public function __construct(
         ProductExtensionFactory $productExtensionFactory,
         DigitalLicenseFactory $digitalLicenseFactory,
-        \Blockscape\DigitalLicense\Model\DigitalLicenseRepository $digitalLicenseRepository,
+        DigitalLicenseRepositoryInterface $digitalLicenseRepository,
         RequestInterface $request
     ) {
 

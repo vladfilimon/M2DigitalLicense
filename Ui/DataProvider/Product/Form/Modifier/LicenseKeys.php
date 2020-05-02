@@ -88,47 +88,15 @@ class LicenseKeys extends AbstractModifier
      */
     public function modifyMeta(array $meta)
     {
-        /*
-  'digital_license' =>
-    array (size=2)
-      'arguments' =>
-        array (size=1)
-          'data' =>
-            array (size=1)
-              ...
-      'children' =>
-        array (size=2)
-          'is_digital_license' =>
-            array (size=1)
-              ...
-          'downloadable_message' =>
-            array (size=1)
-              ...
-         */
-
-        //$linksPath = Composite::CHILDREN_PATH . '/' . Composite::CONTAINER_LINKS;
         $linksPath = 'digital_license/children/container_licenses';
-
         $linksContainer['arguments']['data']['config'] = [
             'componentType' => Form\Fieldset::NAME,
             'additionalClasses' => 'admin__fieldset-section',
             'label' => __('License Keys'),
             'dataScope' => '',
-            'visible' => 1,//$this->locator->getProduct()->getTypeId() === Type::TYPE_DIGITAL_LICENSE,
+            'visible' => 1,
             'sortOrder' => 30,
         ];
-
-        /*
-        $linksTitle['arguments']['data']['config'] = [
-            'componentType' => Form\Field::NAME,
-            'formElement' => Form\Element\Input::NAME,
-            'dataType' => Form\Element\DataType\Text::NAME,
-            'label' => __('License Key'),
-            'dataScope' => 'product.digital_license_key',
-            'scopeLabel' => $this->storeManager->isSingleStoreMode() ? '' : '[STORE VIEW]',
-        ];
-        */
-
         $linksContainer = $this->arrayManager->set(
             'children',
             $linksContainer,
@@ -136,7 +104,6 @@ class LicenseKeys extends AbstractModifier
                 'licenses' => $this->getDynamicRows(),
             ]
         );
-
         return $this->arrayManager->set($linksPath, $meta, $linksContainer);
     }
 

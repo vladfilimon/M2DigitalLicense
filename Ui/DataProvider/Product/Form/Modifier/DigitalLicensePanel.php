@@ -113,7 +113,7 @@ class DigitalLicensePanel extends AbstractModifier
             'formElement' => Form\Element\Checkbox::NAME,
             'componentType' => Form\Field::NAME,
             'component' => 'Blockscape_DigitalLicense/js/components/is-digital-license-handler',
-            'description' => __('Is this a digital license Product?'),
+            'description' => __('Show licenses ? ('.sizeof($this->locator->getProduct()->getExtensionAttributes()->getDigitalLicenses()).')'),
             'dataScope' => 'has_digital_licenses',
             'sortOrder' => 10,
             'imports' => [
