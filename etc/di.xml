@@ -5,6 +5,8 @@
                 type="Blockscape\DigitalLicense\Model\DigitalLicense"/>
     <preference for="Blockscape\DigitalLicense\Api\DigitalLicenseRepositoryInterface"
                 type="Blockscape\DigitalLicense\Model\DigitalLicenseRepository"/>
+    <preference for="Blockscape\DigitalLicense\Api\Data\DigitalLicenseSearchResultInterface"
+                type="Blockscape\DigitalLicense\Model\DigitalLicenseSearchResult"/>
     <type name="Magento\Framework\EntityManager\MetadataPool">
         <arguments>
             <argument name="metadata" xsi:type="array">
