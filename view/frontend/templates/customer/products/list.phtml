@@ -1,0 +1,59 @@
+<?php
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * @var $block \Blockscape\DigitalLicense\Block\Customer\Products\ListProducts
+ */
+?>
+<?php $_items = $block->getItems();
+?>
+<?php if ($_items && count($_items)): ?>
+    <div class="table-wrapper licenses-products">
+        <table id="my-licenses-products-table" class="data table table-licenses-products">
+            <caption class="table-caption"><?= /* @escapeNotVerified */ __('Licenses Products') ?></caption>
+            <thead>
+                <tr>
+                    <th scope="col" class="col id"><?= /* @escapeNotVerified */ __('Order #') ?></th>
+                    <th scope="col" class="col date"><?= /* @escapeNotVerified */ __('Date') ?></th>
+                    <th scope="col" class="col title"><?= /* @escapeNotVerified */ __('Title') ?></th>
+                    <th scope="col" class="col title"><?= /* @escapeNotVerified */ __('License Key') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($_items as $_item): ?>
+                <tr>
+                    <td data-th="<?= $block->escapeHtml(__('Order #')) ?>" class="col id">
+                        <a href="<?= /* @escapeNotVerified */ $block->getOrderViewUrl($_item->getOrderId()) ?>"
+                            title="<?= $block->escapeHtml(__('View Order')) ?>">
+                            <?= /* @escapeNotVerified */ $_item->getOrderItem()->getOrder()->getIncrementId() ?>
+                        </a>
+                    </td>
+                    <td data-th="<?= $block->escapeHtml(__('Date')) ?>" class="col date"><?= /* @escapeNotVerified */ $_item->getOrder() ? $block->formatDate($_item->getOrder()->getCreatedAt()) : ''; ?></td>
+                    <td data-th="<?= $block->escapeHtml(__('Product')) ?>" class="col title">
+                        <strong class="product-name"><?= $block->escapeHtml($_item->getProduct()->getName()) ?></strong>
+                    </td>
+                    <td data-th="<?= $block->escapeHtml(__('License Key')) ?>" class="col license_key"><?= /* @escapeNotVerified */$_item->getLicenseText() ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php if ($block->getChildHtml('pager')): ?>
+        <div class="toolbar licenses-products-toolbar bottom">
+            <?= $block->getChildHtml('pager') ?>
+        </div>
+    <?php endif; ?>
+<?php else: ?>
+    <div class="message info empty"><span><?= /* @escapeNotVerified */ __('You have not purchased any licenses products yet.') ?></span></div>
+<?php endif; ?>
+
+<div class="actions-toolbar">
+    <div class="secondary">
+        <a href="<?= $block->escapeUrl($block->getBackUrl()) ?>" class="action back">
+            <span><?= /* @escapeNotVerified */ __('Back') ?></span>
+        </a>
+    </div>
+</div>

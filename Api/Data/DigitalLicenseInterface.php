@@ -21,7 +21,7 @@ interface DigitalLicenseInterface extends
 
     const PRODUCT_ID = 'product_id';
 
-    const ORDER_ID = 'order_id';
+    const ORDER_ITEM_ID = 'order_item_id';
 
     const CUSTOMER_ID = 'customer_id';
 
@@ -54,18 +54,18 @@ interface DigitalLicenseInterface extends
      */
     public function getProductId();
     /**
-     * Set OrderId
+     * Set Order Item Id
      *
-     * @param int $orderId
+     * @param int $orderItemId
      * @return \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
      */
-    public function setOrderId($orderId);
+    public function setOrderItemId($orderItemId);
     /**
-     * Get OrderId
+     * Get Order Item Id
      *
      * @return int
      */
-    public function getOrderId();
+    public function getOrderItemId();
     /**
      * Set CustomerId
      *

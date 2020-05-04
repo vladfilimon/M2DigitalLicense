@@ -9,6 +9,9 @@
 
 namespace Blockscape\DigitalLicense\Model;
 
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+
 /**
  * DigitalLicense Class
  */
@@ -23,6 +26,27 @@ class DigitalLicense extends \Magento\Framework\Model\AbstractExtensibleModel
     protected $_cacheTag = 'blockscape_digitallicense_digitallicense';
 
     protected $_eventPrefix = 'blockscape_digitallicense_digitallicense';
+
+    protected $_productRepository;
+
+    protected $_orderItemRepository;
+
+    public function __construct(
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        ExtensionAttributesFactory $extensionFactory,
+        AttributeValueFactory $customAttributeFactory,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = [],
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        \Magento\Sales\Api\OrderItemRepositoryInterface $orderItemRepository
+    ) {
+        parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $resource,
+            $resourceCollection, $data);
+        $this->_productRepository = $productRepository;
+        $this->_orderItemRepository = $orderItemRepository;
+    }
 
     /**
      * set resource model
@@ -94,25 +118,62 @@ class DigitalLicense extends \Magento\Framework\Model\AbstractExtensibleModel
         return parent::getData(self::PRODUCT_ID);
     }
 
+
     /**
-     * Set OrderId
+     * Retrieve product
      *
-     * @param int $orderId
-     * @return \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
+     * @return \Magento\Catalog\Model\Product|null
      */
-    public function setOrderId($orderId)
+    public function getProduct()
     {
-        return $this->setData(self::ORDER_ID, $orderId);
+        if (!$this->hasData('product')) {
+            try {
+                $product = $this->_productRepository->getById($this->getProductId());
+            } catch (\Magento\Framework\Exception\NoSuchEntityException $noEntityException) {
+                $product = null;
+            }
+            $this->setProduct($product);
+        }
+        return $this->getData('product');
     }
 
     /**
-     * Get OrderId
+     * Retrieve order
+     *
+     * @return \Magento\Sales\Api\Data\OrderItemInterface|null
+     */
+    public function getOrderItem()
+    {
+        if (!$this->hasData('order_item')) {
+            try {
+                $order = $this->_orderItemRepository->get($this->getOrderItemId());
+            } catch (\Magento\Framework\Exception\NoSuchEntityException $noEntityException) {
+                $order = null;
+            }
+            $this->setOrderItem($order);
+        }
+        return $this->getData('order_item');
+    }
+
+    /**
+     * Set OrderItemId
+     *
+     * @param int $orderItemId
+     * @return \Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface
+     */
+    public function setOrderItemId($orderItemId)
+    {
+        return $this->setData(self::ORDER_ITEM_ID, $orderItemId);
+    }
+
+    /**
+     * Get OrderItemId
      *
      * @return int
      */
-    public function getOrderId()
+    public function getOrderItemId()
     {
-        return parent::getData(self::ORDER_ID);
+        return parent::getData(self::ORDER_ITEM_ID);
     }
 
     /**

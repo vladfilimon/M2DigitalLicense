@@ -10,4 +10,7 @@
     <extension_attributes for="Magento\Catalog\Api\Data\ProductInterface">
         <attribute code="digital_licenses" type="Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface[]" />
     </extension_attributes>
+    <extension_attributes for="Magento\Sales\Api\Data\OrderItemInterface">
+        <attribute code="digital_licenses" type="Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface[]" />
+    </extension_attributes>
 </config>

@@ -55,4 +55,9 @@ interface DigitalLicenseRepositoryInterface
      * @return \Magento\Framework\Api\SearchResults
      */
     public function getByProduct(\Magento\Catalog\Api\Data\ProductInterface $product);
+    /**
+     * @param \Magento\Customer\Api\Data\CustomerInterface $customer
+     * @return \Magento\Framework\Api\SearchResults
+     */
+    public function getByCustomer(\Magento\Customer\Api\Data\CustomerInterface $customer);
 }

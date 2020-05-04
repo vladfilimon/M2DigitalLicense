@@ -144,7 +144,7 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
      * Returns available (not sold) active (not soft deleted) licenses for a product
      *
      * @param ProductInterface $product
-     * @return \Magento\Framework\Api\SearchResults
+     * @return \Magento\Framework\Api\SearchResultsInterface
      */
     public function getByProduct(ProductInterface $product)
     {
@@ -152,8 +152,53 @@ class DigitalLicenseRepository implements \Blockscape\DigitalLicense\Api\Digital
             $this->searchCriteriaBuilder
                 ->addFilter('product_id', $product->getId())
                 ->addFilter('is_active', '1')
-                ->addFilter('order_id', true, 'null')
+                ->addFilter('order_item_id', true, 'null')
                 ->create()
         );
+    }
+
+    /**
+     * Returns all digital licenses purchased by a customer
+     *
+     * @param \Magento\Customer\Api\Data\CustomerInterface $customer
+     * @return \Magento\Framework\Api\SearchResultsInterface
+     */
+    public function getByCustomer(\Magento\Customer\Api\Data\CustomerInterface $customer)
+    {
+
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->create();
+
+        $collection = $this->getCollectionByCustomer($customer);
+        $searchResults = $this->searchResultFactory->create();
+        $this->collectionProcessor->process($searchCriteria, $collection);
+        $collection->load();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
+    }
+    /**
+     * Returns all digital licenses purchased by a customer
+     *
+     * @param \Magento\Customer\Api\Data\CustomerInterface $customer
+     * @return \Blockscape\DigitalLicense\Model\ResourceModel\DigitalLicense\Collection
+     */
+    public function getCollectionByCustomer(\Magento\Customer\Api\Data\CustomerInterface $customer) {
+        $collection = $this->collectionFactory->create();
+        $collection->getSelect()
+            ->joinInner(
+                ['i' => 'sales_order_item'],
+                'i.item_id = main_table.order_item_id',
+                []
+            )
+            ->joinInner(
+                ['o' => 'sales_order'],
+                'i.order_id = o.entity_id',
+                []
+            )
+            ->where('o.customer_id = ?',$customer->getId());
+        return $collection;
     }
 }

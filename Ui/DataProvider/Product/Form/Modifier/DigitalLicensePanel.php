@@ -64,7 +64,7 @@ class DigitalLicensePanel extends AbstractModifier
             'componentType' => Form\Fieldset::NAME,
             'label' => __('Blockscape Digital License'),
             'collapsible' => true,
-            'opened' => sizeof($this->locator->getProduct()->getExtensionAttributes()->getDigitalLicenses()) ? true : false,
+            'opened' => true,
             'sortOrder' => '800',
             'dataScope' => 'data'
         ];
@@ -107,6 +107,7 @@ class DigitalLicensePanel extends AbstractModifier
      */
     protected function addCheckboxIsDigitalLicense()
     {
+
         $checkboxPath = 'digital_license/children/has_digital_licenses';
         $checkboxConfig['arguments']['data']['config'] = [
             'dataType' => Form\Element\DataType\Number::NAME,

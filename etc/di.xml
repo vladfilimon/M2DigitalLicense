@@ -17,8 +17,14 @@
             </argument>
         </arguments>
     </type>
+
+    <!-- Admin product page not using collection but deprecated entity load() call-->
     <type name="Magento\Catalog\Api\ProductRepositoryInterface">
         <plugin name="blockscape_digitallicense_catalog_product_plugin" type="Blockscape\DigitalLicense\Controller\Adminhtml\Product\Initialization\Helper\Plugin\DigitalLicensePlugin"/>
+    </type>
+
+    <type name="\Magento\Catalog\Model\ResourceModel\Product\Collection">
+        <plugin name="digitalLicenseProductAfterLoad" type="Blockscape\DigitalLicense\Plugin\ProductAfterLoad"/>
     </type>
     <type name="Magento\Framework\EntityManager\HydratorPool">
         <arguments>
@@ -26,5 +32,11 @@
                 <item name="Blockscape\DigitalLicense\Api\Data\DigitalLicenseInterface" xsi:type="string">Magento\Framework\EntityManager\AbstractModelHydrator</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Sales\Api\Data\OrderItemInterface">
+        <plugin name="blockscape_digitallicense_order_item_plugin" type="Blockscape\DigitalLicense\Model\Sales\Order\Item\OrderItemPlugin"/>
+    </type>
+    <type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
+        <plugin name="blockscape_digitallicense_quote_itemtoorder_plugin" type="Blockscape\DigitalLicense\Plugin\Model\Quote\Item\ToOrderItemPlugin"/>
     </type>
 </config>

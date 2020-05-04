@@ -12,6 +12,7 @@ use \Magento\Catalog\Api\Data\ProductExtensionFactory;
 use \Blockscape\DigitalLicense\Api\DigitalLicenseRepositoryInterface;
 use \Blockscape\DigitalLicense\Model\DigitalLicenseFactory;
 use Magento\Framework\App\RequestInterface;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 
 class DigitalLicensePlugin
 {
@@ -36,22 +37,37 @@ class DigitalLicensePlugin
     private $digitalLicenseRepository;
 
     /**
+     * @var StockRegistryInterface
+     */
+    protected $_stockRegistry;
+
+    protected $_sourceItemFactory;
+    protected $_sourceItemsSave;
+
+    /**
      * @param ProductExtensionFactory $productExtensionFactory
      * @param DigitalLicenseFactory $digitalLicenseFactory
      * @param DigitalLicenseRepositoryInterface $digitalLicenseRepository
      * @param RequestInterface $request
+     * @param StockRegistryInterface $stockRegistry
      */
     public function __construct(
         ProductExtensionFactory $productExtensionFactory,
         DigitalLicenseFactory $digitalLicenseFactory,
         DigitalLicenseRepositoryInterface $digitalLicenseRepository,
-        RequestInterface $request
+        RequestInterface $request,
+        StockRegistryInterface $stockRegistry
+        //Magento\InventoryApi\Api\Data\SourceItemInterfaceFactory $sourceItemFactory,
+        //Magento\InventoryApi\Api\SourceItemsSaveInterface $sourceItemsSave
     ) {
 
         $this->productExtensionFactory = $productExtensionFactory;
         $this->digitalLicenseFactory      = $digitalLicenseFactory;
         $this->digitalLicenseRepository   = $digitalLicenseRepository;
         $this->request = $request;
+        $this->_stockRegistry = $stockRegistry;
+        //$this->_sourceItemFactory = $sourceItemFactory;
+        //$this->_sourceItemsSave = $sourceItemsSave;
     }
 
     /**
@@ -69,6 +85,9 @@ class DigitalLicensePlugin
     }
 
     /**
+     * GetById() is internally use in the ProductRepository which in turn uses deprecated entity load()
+     * instead of collection; Such is the case of the admin product page
+     *
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $subject
      * @param \Magento\Catalog\Api\Data\ProductInterface $product
      * @return \Magento\Catalog\Api\Data\ProductInterface
@@ -113,7 +132,8 @@ class DigitalLicensePlugin
     public function afterInitialize(
         \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper $subject,
         \Magento\Catalog\Model\Product $product
-    ) {
+    )
+    {
         $digitalLicenseData = $this->request->getPost('digital_license');
         $extension = $product->getExtensionAttributes();
         $prdDigitalLicenses = $extension->getDigitalLicenses();
@@ -148,6 +168,29 @@ class DigitalLicensePlugin
                 $this->digitalLicenseRepository->save($newLicense);
             }
         }
+
+        $qty = sizeof($extension->getDigitalLicenses());
+        /*
+        $objSourceItemInterface = $this->_sourceItemFactory->create();
+        $objSourceItemInterface->setSku($product->getSku());
+        $objSourceItemInterface->setSourceCode('default'); //default warehouse.
+        $objSourceItemInterface->setQuantity($qty);
+        $objSourceItemInterface->setStatus((($qty > 0)? 1 : 0));
+        $this->_sourceItemsSave->execute([$objSourceItemInterface]);
+        */
+        $stockItem = $product->getExtensionAttributes()->getStockItem();
+        if (!$stockItem) {
+            $stockItem = $this->_stockRegistry->getStockItemBySku($product->getSku());
+        }
+
+        $stockItem->setQty($qty);
+        $stockItem->setIsInStock($qty > 0  ? 1 : 0);
+        $productStockData = $product->getStockData();
+        $productStockData['qty'] = $qty;
+        $product->setStockData($productStockData);
+        //$stockItemId = $this->_stockRegistry->updateStockItemBySku($product->getSku(), $stockItem);
+
+
         return $product;
     }
 
